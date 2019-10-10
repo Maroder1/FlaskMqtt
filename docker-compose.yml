@@ -1,0 +1,32 @@
+version: '3'
+services:
+  app:
+
+    depends_on:
+      - mosquitto
+
+    build: .
+
+    ports:
+       - 30000:5000
+
+    environment:
+      SECRET_KEY: my-secret-key
+      MQTT_BROKER_URL: mosquitto
+      MQTT_BROKER_PORT: 1883
+      MQTT_USERNAME: ''
+      MQTT_PASSWORD: ''
+      MQTT_KEEPALIVE: 5
+
+  mosquitto:
+   image: eclipse-mosquitto:latest
+   restart: always
+   ports:
+     - "1883:1883"
+     - "9001:9001"
+   volumes:
+     - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+     - /mosquitto/data
+     - /mosquitto/log
+
+
