@@ -14,8 +14,8 @@ services:
       SECRET_KEY: my-secret-key
       MQTT_BROKER_URL: mosquitto
       MQTT_BROKER_PORT: 1883
-      MQTT_USERNAME: ''
-      MQTT_PASSWORD: ''
+      MQTT_USERNAME: edge
+      MQTT_PASSWORD: edge
       MQTT_KEEPALIVE: 5
 
   mosquitto:

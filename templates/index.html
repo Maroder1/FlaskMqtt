@@ -7,8 +7,9 @@
 
 {% block scripts %}
 {{ super() }}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.2.9/justgage.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
-
 <script type="text/javascript" charset="utf-8">
   $(document).ready(function() {
     var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -34,109 +35,140 @@
       $('#unsubscribe').hide();
       $('#subscribe_topic').prop('readonly', false);
     });
+      var g = new JustGage({
+      id: "gauge",
+      value: 0,
+      min: 0,
+      max: 2000,
+      label: "PLC value"
+  });
     socket.on('mqtt_message', function(data) {
       console.log(data);
       var text = '(' + data['topic'] + ' qos: ' + data['qos'] + ') ' + data['payload'];
       var $textarea = $('#subscribe_messages');
       $textarea.val($textarea.val() + text + '\n');
+      g.refresh(data['payload'])
     })
   });
+
 </script>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-xs-12">
-      <h1>Simatic Edge - Example with Flask and MQTT</h1>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Publish MQTT Message</h3>
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>Simatic Edge - Example with Flask and MQTT</h1>
         </div>
-        <div class="panel-body">
-          <div class="col-xs-12">
-            <div class="row">
-              <div class="form-horizontal">
-                <div class="form-group">
-                  <label class="control-label col-xs-4">Topic: </label>
-                  <div class="col-xs-8">
-                    <input id="topic" class="form-control">
-                  </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Publish MQTT Message</h3>
                 </div>
-                <div class="form-group">
-                  <label class="control-label col-xs-4">Message: </label>
-                  <div class="col-xs-8">
-                    <input id="message" class="form-control">
-                  </div>
+                <div class="panel-body">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-4">Topic: </label>
+                                    <div class="col-xs-8">
+                                        <input id="topic" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-4">Message: </label>
+                                    <div class="col-xs-8">
+                                        <input id="message" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-4">Qos: </label>
+                                    <div class="col-xs-8">
+                                        <select id="qos" class="form-control">
+                                            <option value=0>0</option>
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-8 col-xs-offset-4">
+                                        <button id="publish" class="btn btn-primary">Publish</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                  <label class="control-label col-xs-4">Qos: </label>
-                  <div class="col-xs-8">
-                    <select id="qos" class="form-control">
-                      <option value=0>0</option>
-                      <option value=1>1</option>
-                      <option value=2>2</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <div class="col-xs-8 col-xs-offset-4">
-                    <button id="publish" class="btn btn-primary">Publish</button>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-    <div class="col-xs-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Subscribe MQTT Messages</h3>
-        </div>
-        <div class="panel-body">
-          <div class="col-xs-12">
-            <div class="row">
-              <div class="form-horizontal">
-                <div class="form-group">
-                  <label class="control-label col-xs-4">Topic:</label>
-                  <div class="col-xs-8">
-                    <input id="subscribe_topic" class="form-control">
-                  </div>
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Subscribe MQTT Messages</h3>
                 </div>
-                <div class="form-group">
-                  <label class="control-label col-xs-4">Qos: </label>
-                  <div class="col-xs-8">
-                    <select id="subscribe_qos" class="form-control">
-                      <option value=0>0</option>
-                      <option value=1>1</option>
-                      <option value=2>2</option>
-                    </select>
-                  </div>
+                <div class="panel-body">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-4">Topic:</label>
+                                    <div class="col-xs-8">
+                                        <input id="subscribe_topic" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-4">Qos: </label>
+                                    <div class="col-xs-8">
+                                        <select id="subscribe_qos" class="form-control">
+                                            <option value=0>0</option>
+                                            <option value=1>1</option>
+                                            <option value=2>2</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-8 col-xs-offset-4">
+                                        <button id="subscribe" class="btn btn-primary">Subscribe</button>
+                                        <button id="unsubscribe" class="btn btn-default" style="display: none;">
+                                            Unsubscribe
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-xs-4">Messages:</label>
+                                    <div class="col-xs-8">
+                                        <textarea id="subscribe_messages" class="form-control" rows=10></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                  <div class="col-xs-8 col-xs-offset-4">
-                    <button id="subscribe" class="btn btn-primary">Subscribe</button>
-                    <button id="unsubscribe" class="btn btn-default" style="display: none;" >Unsubscribe</button>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="control-label col-xs-4">Messages:</label>
-                  <div class="col-xs-8">
-                    <textarea id="subscribe_messages" class="form-control" rows=10></textarea>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Guage demo</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="col-xs-12">
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <div id="gauge" class="col-xs-8 "></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+
+
 {% endblock %}
