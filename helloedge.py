@@ -1,6 +1,5 @@
 """
 
-SIMATIC Edge test application using Flask and MQTT
 
 """
 
